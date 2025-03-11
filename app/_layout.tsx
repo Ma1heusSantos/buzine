@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { SessionProvider } from "./context/ctx"; // Importa o provider
+import { SessionProvider } from "./context/ctx";
 
 export default function Layout() {
   return (

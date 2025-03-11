@@ -1,4 +1,5 @@
 import React from "react";
+import { useContext, createContext, type PropsWithChildren } from "react";
 import { useStorageState } from "../../components/useStorageState";
 import { User } from "../../types/user";
 
@@ -15,35 +16,15 @@ const AuthContext = React.createContext<{
 });
 
 export function useSession() {
-  const value = React.useContext(AuthContext);
+  const value = useContext(AuthContext);
+  if (process.env.NODE_ENV !== "production") {
+    if (!value) {
+      throw new Error("useSession must be wrapped in a <SessionProvider />");
+    }
+  }
+
   return value;
 }
-// export function SessionProvider(props: React.PropsWithChildren) {
-//   const [[isLoading, session], setSession] = useStorageState("session");
-
-//   async function signIn(email: string, password: string) {
-//     try {
-//       // Chamar a API para autenticar
-//       const response = await fetch("https://sua-api.com/login", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({ email, password }),
-//       });
-
-//       const result = await response.json();
-
-//       if (response.ok && result.token) {
-//         setSession(result.token); // Armazena o token
-//       } else {
-//         throw new Error(result.message || "Erro ao fazer login");
-//       }
-//     } catch (error) {
-//       console.error("Erro no login:", error);
-//     }
-//   }
-// }
 
 export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useSession } from "../context/ctx";
 import { User } from "../../types/user";
+import { router } from "expo-router";
 
 export default function Login() {
   const [user, setUser] = useState<User>({
@@ -17,9 +18,25 @@ export default function Login() {
     token: "",
   });
 
+  const { signIn } = useSession();
+
   function handleSubmit() {
-    const { signIn } = useSession();
-    signIn(user);
+    // Simulação de chamada de API (substitua pela lógica real)
+    const response = { token: "123456789", nome: "Matheus" };
+    if (!response.token) {
+      console.log("Erro: o token não está presente.");
+      return;
+    }
+
+    const authenticatedUser: User = {
+      nome: response.nome,
+      email: user.email,
+      password: user.password,
+      token: response.token,
+    };
+
+    signIn(authenticatedUser);
+    router.replace("../home");
   }
 
   function handleChange(name: string, value: string) {
