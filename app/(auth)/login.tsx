@@ -7,23 +7,24 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useSession } from "../context/ctx";
-
-interface DataLogin {
-  email: string;
-  password: string;
-}
+import { User } from "../../types/user";
 
 export default function Login() {
-  const [data, setData] = useState<DataLogin>({ email: "", password: "" });
+  const [user, setUser] = useState<User>({
+    nome: "",
+    email: "",
+    password: "",
+    token: "",
+  });
 
   function handleSubmit() {
     const { signIn } = useSession();
-    signIn(data.email);
+    signIn(user);
   }
 
   function handleChange(name: string, value: string) {
-    setData({
-      ...data,
+    setUser({
+      ...user,
       [name]: value,
     });
   }

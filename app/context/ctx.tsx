@@ -1,10 +1,11 @@
 import React from "react";
 import { useStorageState } from "../../components/useStorageState";
+import { User } from "../../types/user";
 
 const AuthContext = React.createContext<{
-  signIn: (email: string) => void;
+  signIn: (user: User) => void;
   signOut: () => void;
-  session?: string | null;
+  session?: User | null;
   isLoading: boolean;
 }>({
   signIn: async () => null,
@@ -13,7 +14,6 @@ const AuthContext = React.createContext<{
   isLoading: false,
 });
 
-// This hook can be used to access the user info.
 export function useSession() {
   const value = React.useContext(AuthContext);
   return value;
@@ -47,12 +47,17 @@ export function useSession() {
 
 export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
+
   return (
     <AuthContext.Provider
       value={{
-        signIn: (email: string) => {
-          // adicionar logica de validação
-          setSession(email); //adicionar o usuario ao qual eu quero logar
+        signIn: (user: User) => {
+          if (!user || !user.token) {
+            console.log("usuario não encontrado");
+            return;
+          }
+          console.log(user);
+          setSession(user); //adicionar o usuario ao qual eu quero logar
         },
         signOut: () => {
           setSession(null);

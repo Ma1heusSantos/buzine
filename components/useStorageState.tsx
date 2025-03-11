@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useReducer } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import { User } from "../types/user";
 
 type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
 
@@ -36,32 +37,31 @@ export async function setStorageItemAsync(key: string, value: string | null) {
   }
 }
 
-export function useStorageState(key: string): UseStateHook<string> {
-  // Public
-  const [state, setState] = useAsyncState<string>();
+// Modifiquei a função para aceitar User ou null
+export function useStorageState(key: string): UseStateHook<User | null> {
+  const [state, setState] = useAsyncState<User | null>([true, null]);
 
-  // Get
+  // Função para recuperar o valor armazenado (com JSON.parse)
   useEffect(() => {
     if (Platform.OS === "web") {
       try {
-        if (typeof localStorage !== "undefined") {
-          setState(localStorage.getItem(key));
-        }
+        const storedValue = localStorage.getItem(key);
+        setState(storedValue ? JSON.parse(storedValue) : null); // Converte a string para objeto
       } catch (e) {
         console.error("Local storage is unavailable:", e);
       }
     } else {
       SecureStore.getItemAsync(key).then((value) => {
-        setState(value);
+        setState(value ? JSON.parse(value) : null); // Converte de string para objeto
       });
     }
   }, [key]);
 
-  // Set
+  // Função para armazenar o valor (com JSON.stringify)
   const setValue = useCallback(
-    (value: string | null) => {
+    (value: User | null) => {
       setState(value);
-      setStorageItemAsync(key, value);
+      setStorageItemAsync(key, value ? JSON.stringify(value) : null); // Converte objeto para string
     },
     [key]
   );
